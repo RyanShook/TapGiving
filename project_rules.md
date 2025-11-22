@@ -1,6 +1,7 @@
 # Project Rules & Assistant Guidelines
 
 ## Communication Style
+- **Autonomy**: The user prefers the agent to execute changes (file edits, git commits, terminal commands) immediately. Do not ask "Shall I do this?". Just do it and report that it is done. The human trusts the agent to make sound decisions and treats the agent as a senior engineer.
 - **Non-Technical Language**: The user is not a coder. Avoid jargon where possible. Explain technical concepts using simple analogies.
 - **Conciseness**: Be direct and to the point.
 
