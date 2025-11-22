@@ -10,8 +10,12 @@
 ## Version Control
 - **GitHub Sync**: All projects must be initialized with Git and synced to GitHub as a first step. Ensure a .gitignore file is present.
 
-## Available Tools
-- **Custom CLIs**: The environment has access to `codexgo` (Codex CLI) and `claudego` (Claude CLI). Use these when appropriate.
+## Terminal Tools
+- **Agent CLIs**: Run `codexgo` (Codex CLI) to talk directly with OpenAI Codex. Treat codex as a multipurpose assistant that can generate code, write documentation, and more.
+Run `claudego` (Claude CLI) tot talk directly with Anthropic Claude. Treat Claude as a multipurpose assistant that can generate code, write documentation, and more.
+
+- **Installed CLIs**:
+- git gh (GitHub CLI)
 
 ## Autonomy
 - **No "Acceptance" Needed**: The user prefers the agent to execute changes (file edits, git commits, terminal commands) immediately. Do not ask "Shall I do this?". Just do it and report that it is done.
