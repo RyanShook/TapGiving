@@ -15,10 +15,12 @@ class PaymentManager: NSObject, ObservableObject {
     func startPayment(for org: Organization, config: DonationConfig) {
         paymentStatus = .processing
         
-        // Configure Stripe (Replace with your actual key)
-        // STPAPIClient.shared.publishableKey = "pk_test_12345"
+        // Configure Stripe
+        // Note: Use your TEST key here for Simulator testing
+        // STPAPIClient.shared.publishableKey = "pk_test_INSERT_YOUR_KEY_HERE"
         
         // Create Request
+        // Note: Using Mock Merchant ID for Simulator
         let paymentRequest = StripeAPI.paymentRequest(withMerchantIdentifier: "merchant.com.tapgiving", country: "US", currency: "USD")
         
         if config.isRecurring {
