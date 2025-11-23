@@ -10,7 +10,7 @@ class OrganizationService: ObservableObject {
             id: "WoodlandsChurch",
             name: "Woodlands Church",
             stripeAccountID: "acct_123456789", // Mock Connect ID
-            logoURL: URL(string: "https://example.com/woodlands-logo.png")
+            logoURL: URL(string: "https://ui-avatars.com/api/?name=Woodlands+Church&background=0D8ABC&color=fff&size=200")
         )
     ]
     
