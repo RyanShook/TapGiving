@@ -26,11 +26,15 @@ struct TapGivingClipApp: App {
         // URL Format: https://appclip.tap.giving/[OrgName]?f=[id]&r=[0/1]
         
         // 1. Parse OrgName from Path
-        let pathComponents = url.pathComponents
-        // pathComponents might be ["/", "WoodlandsChurch"]
-        if pathComponents.count > 1 {
-            let orgID = pathComponents[1]
-            orgService.fetchOrganization(id: orgID)
+        // URL: https://appclip.tap.giving/WoodlandsChurch
+        // pathComponents: ["/", "WoodlandsChurch"]
+        
+        // We iterate to find the first non-slash component that isn't "appclip.tap.giving" (if it appears in path)
+        // For a standard https URL, pathComponents usually starts with "/"
+        
+        if let orgID = pathComponents.last, orgID != "/" {
+             print("📍 Detected Org ID: \(orgID)")
+             orgService.fetchOrganization(id: orgID)
         }
         
         // 2. Parse Query Parameters

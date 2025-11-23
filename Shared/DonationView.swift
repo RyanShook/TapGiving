@@ -75,7 +75,7 @@ struct DonationView: View {
                 }) {
                     HStack {
                         Image(systemName: "applelogo")
-                        Text("Pay")
+                        Text("Donate")
                     }
                     .font(.headline)
                     .foregroundColor(.white)

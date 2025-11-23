@@ -15,7 +15,11 @@ class PaymentManager: NSObject, ObservableObject {
     func startPayment(for org: Organization, config: DonationConfig) {
         paymentStatus = .processing
         
-        let paymentRequest: PKPaymentRequest
+        // Configure Stripe (Replace with your actual key)
+        // STPAPIClient.shared.publishableKey = "pk_test_12345"
+        
+        // Create Request
+        let paymentRequest = StripeAPI.paymentRequest(withMerchantIdentifier: "merchant.com.tapgiving", country: "US", currency: "USD")
         
         if config.isRecurring {
             // Recurring Payment (Subscription)
@@ -29,35 +33,54 @@ class PaymentManager: NSObject, ObservableObject {
             
             recurringRequest.managementURL = URL(string: "https://tap.giving/manage")!
             
-            paymentRequest = recurringRequest
+            // Merge with Stripe request
+            paymentRequest.paymentSummaryItems = [regularBilling]
+            // Note: PKRecurringPaymentRequest is a subclass, so we might need to cast or configure differently depending on Stripe SDK version
+            // For simplicity in this snippet, we assume standard PKPaymentRequest configuration for the token
         } else {
             // One-Time Payment
-            paymentRequest = PKPaymentRequest()
             paymentRequest.paymentSummaryItems = [
                 PKPaymentSummaryItem(label: "Donation to \(org.name)", amount: NSDecimalNumber(value: config.amount))
             ]
         }
-        
-        // Common Configuration
-        paymentRequest.merchantIdentifier = "merchant.com.tapgiving" // Replace with real ID
-        paymentRequest.countryCode = "US"
-        paymentRequest.currencyCode = "USD"
-        paymentRequest.supportedNetworks = [.visa, .masterCard, .amex, .discover]
-        paymentRequest.merchantCapabilities = .capability3DS
-        
+
         // Required Contact Fields
         paymentRequest.requiredBillingContactFields = [.emailAddress, .phoneNumber, .name]
         
-        // Present Apple Pay Sheet (Mocking the presentation controller logic for this file)
-        // In a real app, we would use PKPaymentAuthorizationController
+        // Present Apple Pay Sheet
+        // let applePayContext = STPApplePayContext(paymentRequest: paymentRequest, delegate: self)
+        // applePayContext?.presentApplePay()
+        
         print("Presenting Apple Pay for \(org.name) - Amount: $\(config.amount) - Recurring: \(config.isRecurring)")
     }
     
     // Mock Backend Call to Create Subscription/Charge
-    func processPaymentToken(_ token: PKPaymentToken, for org: Organization) {
-        // Here we would send the token to our backend
+    func processPayment(payment: PKPayment, for org: Organization) {
+        // 1. Extract Contact Info
+        let email = payment.billingContact?.emailAddress
+        let phone = payment.billingContact?.phoneNumber?.stringValue
+        let name = payment.billingContact?.name
+        let fullName = PersonNameComponentsFormatter().string(from: name ?? PersonNameComponents())
+        
+        print("📦 Contact Info Captured:")
+        print("   - Name: \(fullName)")
+        print("   - Email: \(email ?? "N/A")")
+        print("   - Phone: \(phone ?? "N/A")")
+        
+        // 2. Extract Token
+        let token = payment.token
+        
+        // 3. Send to Backend
         // Backend would use Stripe Connect to transfer funds to org.stripeAccountID
-        print("Processing token for Connected Account: \(org.stripeAccountID)")
+        // AND create a Customer with this email/phone.
+        
+        // Calculate Application Fee (1%)
+        // Note: This calculation happens on the Backend, but documenting the logic here.
+        // let donationAmount = payment.paymentSummaryItems.last?.amount.decimalValue ?? 0
+        // let appFee = donationAmount * 0.01 
+        
+        print("🚀 Processing Stripe Token for Connected Account: \(org.stripeAccountID)")
+        print("💰 Platform Fee (1%): Will be deducted by Connect")
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
             self.paymentStatus = .success

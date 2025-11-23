@@ -9,6 +9,8 @@ The goal is to make donating as frictionless as buying a coffee.
 - **Interaction**: They hold the top of their iPhone near the NFC sticker.
 - **System**: iOS detects the NFC tag containing the URL `https://appclip.tap.giving/WoodlandsChurch?f=1&r=0`.
 
+> **Backend Note**: No backend call yet. This is purely iOS reading the NDEF data from the NFC tag.
+
 ### 2. The App Clip Card (System UI)
 - **Visual**: A system sheet slides up from the bottom (the "App Clip Card").
 - **Content**:
@@ -16,6 +18,8 @@ The goal is to make donating as frictionless as buying a coffee.
     - **Image**: A high-quality photo of the organization.
     - **Action Button**: "Open".
 - **Decision**: The user taps "Open".
+
+> **Backend Note**: iOS checks the `apple-app-site-association` file hosted at `https://appclip.tap.giving` to verify the App Clip is valid and trusted.
 
 ### 3. The App Clip Experience (Our Code)
 - **Load**: The App Clip launches.
@@ -26,7 +30,9 @@ The goal is to make donating as frictionless as buying a coffee.
     - **Header**: "Donate to Woodlands Church"
     - **Amount Field**: $50 (Pre-filled, editable).
     - **Recurring Toggle**: "Make this a recurring monthly donation?" (Pre-selected: No).
-- **Action**: User taps "Give Now via Apple Pay".
+- **Action**: User taps "Donate via Apple Pay".
+
+> **Backend Note**: The App Clip calls `OrganizationService.fetch("WoodlandsChurch")`. Our backend looks up the `OrgID` and returns the `StripeAccountID` (e.g., `acct_123`) and the Logo URL.
 
 ### 4. Payment (Apple Pay)
 - **Sheet**: The standard Apple Pay sheet slides up.
@@ -37,6 +43,12 @@ The goal is to make donating as frictionless as buying a coffee.
     - **One-Time**: Stripe processes charge immediately.
     - **Recurring**: Backend creates a Stripe Subscription.
 - **Result**: "Ding!" Success checkmark.
+
+> **Backend Note**: 
+> 1. **Tokenization**: iOS sends the encrypted payment data to Stripe to get a `Token`.
+> 2. **Charge**: Our backend receives the `Token` + `StripeAccountID`.
+> 3. **Connect**: We use the Stripe API to create a Charge (or Subscription) *on behalf of* the Connected Account (`acct_123`), deducting our 1% application fee.
+> 4. **Customer**: We create a Stripe Customer record with the Name/Email/Phone for future retention.
 
 ### 5. Post-Donation & Retention
 - **Success Screen**: "Thank you for your generosity! Manage your giving profile using the tap.giving app."
